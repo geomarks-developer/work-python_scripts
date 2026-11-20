@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# IDE/editor
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Generated reconciliation reports
+data/output/
+*.artifactvalidatepass
+
+# Temporary files
+~$*
+*.tmp
+*.bak
+
+# Email evidence may contain sensitive information
+data/emails/
+
+# Local PAVF/reimbursement input data
+data/pavf/
+data/breakdown/

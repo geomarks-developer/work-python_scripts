@@ -1,0 +1,20 @@
+    # Create Outlook instance
+    outlook = win32.Dispatch('outlook.application')
+    mail = outlook.CreateItem(0)
+
+    # Email details
+    mail.To = email_to
+    #"gmarks@hauto.net"
+    #email_to
+    mail.CC = ""
+
+    mail.BCC = ""
+    mail.Subject = f" '{report_name}' "
+    mail.Body = "All,\n\nSee Attached Excel File...\n\nThank-you"
+
+    # Attach Excel file
+    mail.Attachments.Add(output_file)
+
+    # Send email
+    mail.Send()
+    print("Email sent via Outlook")

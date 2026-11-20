@@ -1,0 +1,16 @@
+reconciliation_app/
+
+├── app.py                 (Streamlit UI)
+├── email_reader.py
+├── attachment_reader.py
+├── spreadsheet_reader.py
+├── match_engine.py
+├── database.py
+├── report_generator.py
+├── config.py
+│
+├── data/
+│   ├── incoming/
+│   ├── processed/
+│   └── db/
+│       └── reconciliation.db

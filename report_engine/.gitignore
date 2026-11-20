@@ -1,0 +1,28 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore virtual environments
+venv/
+.venv/
+
+# Ignore build artifacts
+build/
+dist/
+
+# Ignore logs
+logs/
+*.log
+
+# Ignore generated reports
+output/
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore Windows junk files
+Thumbs.db
+
+# Ignore config
+config/
+*.db

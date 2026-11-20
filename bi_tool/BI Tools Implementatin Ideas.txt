@@ -1,0 +1,162 @@
+IMPLEMENTATION OPTIONS
+======================
+
+OPTION 1 - INTERNAL STREAMLIT SERVER (RECOMMENDED)
+-------------------------------------------------
+
+Architecture:
+
+    User Browser
+         |
+    Company Network
+         |
+    Streamlit Server
+         |
+       Oracle
+
+Requirements:
+
+- Windows VM, Windows Server, or dedicated PC
+- Python
+- Streamlit
+- Oracle Instant Client
+
+Startup:
+
+    streamlit run bi_tool.py
+
+Benefits:
+
+- No software installation on user PCs
+- No compiling required
+- Single code base
+- Easy updates
+- Single SQLite database
+- Users access through a web browser
+- Stays completely behind the firewall
+
+Typical Access:
+
+    http://bi-server:8501
+
+Recommendation:
+
+    Best option for initial deployment.
+
+
+OPTION 2 - IIS REVERSE PROXY
+----------------------------
+
+Architecture:
+
+    User Browser
+         |
+         IIS
+         |
+     Streamlit
+         |
+       Oracle
+
+Requirements:
+
+- Windows Server
+- IIS
+- URL Rewrite Module
+- Application Request Routing (ARR)
+- Existing Streamlit deployment
+
+Benefits:
+
+- Cleaner URL
+- More professional appearance
+- Easier for users to remember
+- Can integrate with existing internal web infrastructure
+
+Example URLs:
+
+    http://bi
+
+or
+
+    http://bi.company.local
+
+Recommendation:
+
+    Best option after the application gains users.
+
+
+OPTION 3 - COMPILED DESKTOP APPLICATION
+---------------------------------------
+
+Architecture:
+
+    User Desktop
+         |
+        EXE
+         |
+       Oracle
+
+Requirements:
+
+- PyInstaller
+- Oracle client on each machine
+- Distribution process
+
+Build Example:
+
+    pyinstaller --onefile bi_tool.py
+
+Benefits:
+
+- Runs locally
+- No server required
+
+Drawbacks:
+
+- Must distribute updates to every user
+- More difficult maintenance
+- Version management becomes a challenge
+- SQLite database handling becomes more complicated
+
+Recommendation:
+
+    Not recommended for multi-user internal deployment.
+
+
+RECOMMENDED PATH
+================
+
+Phase 1:
+    Deploy as an internal Streamlit server.
+
+Phase 2:
+    Add IIS reverse proxy for a cleaner URL.
+
+Phase 3:
+    Consider Docker or additional infrastructure if usage grows significantly.
+
+Avoid:
+    Compiling to a desktop EXE unless there is a specific requirement for local-only execution.
+	
+
+Rollout plan idea
+================
+
+Phase 1
+--------
+Run on George's PC
+3-5 users
+
+Phase 2
+--------
+Show value
+Gather feedback
+Add requested features
+
+Phase 3
+--------
+Move to an always-on workstation
+
+Phase 4
+--------
+Only consider a dedicated server if adoption grows significantly

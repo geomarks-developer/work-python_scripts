@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Excel / data files
+*.xlsx
+*.xls
+*.csv
+
+# Generated reports
+reports/
+output/
+exports/
+
+# Environment
+.env
+
+# Email files
+*.eml
+*.msg
+
+# Excel/data
+*.xlsx
+*.xls
+*.csv
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environments
+.venv/
+venv/

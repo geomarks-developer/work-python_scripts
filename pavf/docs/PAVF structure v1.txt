@@ -1,0 +1,65 @@
+reconciliation_app/
+
+├── app.py                 (Streamlit UI)
+├── email_reader.py
+├── attachment_reader.py
+├── spreadsheet_reader.py
+├── match_engine.py
+├── database.py
+├── report_generator.py
+├── config.py
+│
+├── data/
+│   ├── incoming/
+│   ├── processed/
+│   └── db/
+│       └── reconciliation.db
+
+
+EmailReconciliation/
+│
+├── app.py
+├── config.py
+├── requirements.txt
+├── README.md
+│
+├── data/
+│   ├── incoming/
+│   ├── processed/
+│   ├── archive/
+│   └── db/
+│       └── reconciliation.db
+│
+├── modules/
+│   ├── __init__.py
+│   │
+│   ├── spreadsheet_reader.py
+│   ├── email_reader.py
+│   ├── attachment_reader.py
+│   ├── text_extractor.py
+│   ├── database.py
+│   ├── matcher.py
+│   ├── report_generator.py
+│   ├── file_manager.py
+│   └── logger.py
+│
+├── pages/
+│   ├── dashboard.py
+│   ├── reconcile.py
+│   ├── results.py
+│   └── settings.py
+│
+├── models/
+│   ├── email_record.py
+│   ├── attachment_record.py
+│   ├── match_record.py
+│   └── spreadsheet_record.py
+│
+├── reports/
+│
+├── logs/
+│
+└── tests/
+    ├── test_matcher.py
+    ├── test_email_reader.py
+    └── test_spreadsheet_reader.py

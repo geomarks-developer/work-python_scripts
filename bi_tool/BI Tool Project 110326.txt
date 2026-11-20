@@ -1,0 +1,320 @@
+ORACLE BI TOOL DEVELOPMENT PLAN
+==============================
+
+PHASE 1 - FOUNDATION (COMPLETED)
+================================
+
+Objective:
+Create a secure Oracle query tool with a SQL editor and basic reporting capabilities.
+
+Completed:
+[X] Oracle login
+[X] Connection testing
+[X] Oracle connection management
+[X] SQL editor
+[X] SQL validation
+[X] Query execution
+[X] Query history
+[X] Results grid
+[X] CSV export
+[X] Excel export
+[X] PDF export
+[X] PNG export
+[X] Plotly charting
+[X] SQLite metadata repository
+
+Deliverable:
+A functional SQL reporting tool.
+
+
+PHASE 2 - VISUAL QUERY BUILDER (COMPLETED)
+==========================================
+
+Objective:
+Allow users to build SQL without writing SQL.
+
+Completed:
+[X] Visual Query Builder
+[X] Column selection
+[X] Dynamic join builder
+[X] Automatic FK relationship discovery
+[X] Multi-level joins
+[X] WHERE builder
+[X] Advanced manual WHERE option
+[X] GROUP BY builder
+[X] Aggregate functions
+[X] HAVING builder
+[X] ORDER BY builder
+[X] Row limit support
+[X] SQL generation
+[X] Copy generated SQL to editor
+[X] Run generated SQL directly
+
+Deliverable:
+A no-code SQL query designer.
+
+
+PHASE 3 - PERSONALIZATION & METADATA (COMPLETED)
+================================================
+
+Objective:
+Improve productivity and usability for business users.
+
+Completed:
+[X] Saved queries
+[X] User-specific saved queries
+[X] Query ownership
+[X] Created timestamp
+[X] Updated timestamp
+[X] Duplicate query prevention
+[X] Favorite objects table
+[X] Favorite-only filtering
+[X] Business categories
+[X] Display category beside object name
+[X] Display TABLE/VIEW indicator
+[X] SQLite metadata management
+
+Deliverable:
+A personalized reporting experience.
+
+
+PHASE 4 - SAVED REPORT DESIGNER (NEXT)
+======================================
+
+Objective:
+Allow users to save and restore complete report definitions.
+
+Planned:
+[ ] Save Visual Builder state
+[ ] Restore Visual Builder state
+[ ] Save selected table
+[ ] Save joins
+[ ] Save filters
+[ ] Save GROUP BY
+[ ] Save aggregates
+[ ] Save HAVING clauses
+[ ] Save sorting
+[ ] Save row limit
+[ ] Reload builder exactly as it was saved
+
+Business Value:
+Users can reopen and continue editing reports instead of rebuilding them.
+
+Priority:
+VERY HIGH
+
+Estimated Effort:
+Medium
+
+
+PHASE 5 - BUSINESS OBJECT NAVIGATION
+====================================
+
+Objective:
+Help users find the right tables and views faster.
+
+Planned:
+[ ] Business Area filter
+[ ] Inventory category filter
+[ ] Purchasing category filter
+[ ] Shipping category filter
+[ ] AP category filter
+[ ] AR category filter
+[ ] Fixed Assets category filter
+[ ] GL category filter
+[ ] Production category filter
+[ ] Recent objects list
+[ ] User-specific recent object tracking
+
+Business Value:
+Greatly reduces scrolling through large object lists.
+
+Priority:
+HIGH
+
+Estimated Effort:
+Small
+
+
+PHASE 6 - METADATA INTELLIGENCE
+===============================
+
+Objective:
+Help users understand the IQMS data model.
+
+Planned:
+[ ] Data dictionary search
+[ ] Table search
+[ ] Column search
+[ ] Data type display
+[ ] Nullable indicator
+[ ] Oracle comments support
+[ ] Relationship explorer
+[ ] Suggested joins
+[ ] Common join recommendations
+
+Business Value:
+Reduces dependence on tribal knowledge.
+
+Priority:
+HIGH
+
+Estimated Effort:
+Medium
+
+
+PHASE 7 - QUERY PRODUCTIVITY
+============================
+
+Objective:
+Help users organize and manage reports.
+
+Planned:
+[ ] Favorite queries
+[ ] Query folders
+[ ] Query categories
+[ ] Shared queries
+[ ] Department queries
+[ ] Personal query workspace
+[ ] Query tagging
+[ ] Search saved queries
+
+Business Value:
+Improves report organization and reuse.
+
+Priority:
+MEDIUM
+
+Estimated Effort:
+Medium
+
+
+PHASE 8 - ANALYTICS & DASHBOARDS
+================================
+
+Objective:
+Transform the tool into a self-service BI platform.
+
+Planned:
+[ ] Save chart definitions
+[ ] Chart library
+[ ] Dashboard builder
+[ ] Multi-chart dashboards
+[ ] Dashboard layouts
+[ ] Dashboard refresh
+[ ] Dashboard catalog
+[ ] Drill-through reports
+
+Business Value:
+Turns reports into reusable analytics assets.
+
+Priority:
+HIGH
+
+Estimated Effort:
+Large
+
+
+PHASE 9 - DISTRIBUTION & AUTOMATION
+===================================
+
+Objective:
+Deliver reports automatically.
+
+Planned:
+[ ] Query scheduling
+[ ] Scheduled exports
+[ ] Email delivery
+[ ] Daily reports
+[ ] Weekly reports
+[ ] Monthly reports
+[ ] Scheduled dashboard refresh
+
+Business Value:
+Eliminates manual report generation.
+
+Priority:
+MEDIUM
+
+Estimated Effort:
+Large
+
+
+PHASE 10 - ADMINISTRATION
+=========================
+
+Objective:
+Provide operational maintenance and monitoring.
+
+Planned:
+[ ] Favorite object maintenance screen
+[ ] Category maintenance screen
+[ ] Display order maintenance
+[ ] User activity dashboard
+[ ] Usage statistics
+[ ] Most-used queries
+[ ] Most-used tables
+[ ] Active users dashboard
+[ ] Security roles
+[ ] Admin users
+[ ] Power users
+
+Business Value:
+Makes the application self-maintaining.
+
+Priority:
+MEDIUM
+
+Estimated Effort:
+Medium
+
+
+PHASE 11 - ADVANCED FEATURES
+============================
+
+Objective:
+Add enterprise BI capabilities.
+
+Future Candidates:
+[ ] Natural language to SQL
+[ ] AI-assisted report creation
+[ ] Oracle package browser
+[ ] Stored procedure runner
+[ ] Explain plan viewer
+[ ] Query performance analysis
+[ ] Query version history
+[ ] Dashboard sharing
+[ ] Query dependency mapping
+[ ] Audit logging
+[ ] Row-level security
+
+Priority:
+LOWER PRIORITY / FUTURE
+
+
+CURRENT RECOMMENDED ROADMAP
+===========================
+
+1. Save / Restore Visual Builder State
+2. Business Area Filter
+3. Recent Objects Tracking
+4. Data Dictionary Search
+5. Suggested Joins
+6. Favorite Queries
+7. Saved Charts
+8. Dashboard Builder
+9. Query Scheduling
+10. Administration Screens
+
+CURRENT PROJECT STATUS
+======================
+
+Foundation ............. COMPLETE
+Visual Builder ......... COMPLETE
+Saved Queries .......... COMPLETE
+Favorites .............. COMPLETE
+Metadata Catalog ....... STARTED
+Report Persistence ..... NEXT
+Analytics Layer ........ FUTURE
+Dashboard Layer ........ FUTURE
+Enterprise Features .... FUTURE
