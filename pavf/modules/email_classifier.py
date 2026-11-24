@@ -47,7 +47,7 @@ class EmailClassification:
 class EmailClassifier:
 
     PART_PATTERN = re.compile(
-        r"\bS\d+(?:[-_]\d+)?\b",
+        r"\bS\d{7,}(?:[-_]\d+)?\b",
         re.IGNORECASE
     )
 

@@ -1,18 +1,16 @@
 """pyPAVF Streamlit application."""
 from __future__ import annotations
 
+from io import BytesIO
 from pathlib import Path
-import shutil
 import tempfile
 
+import pandas as pd
 import streamlit as st
 
-from modules.breakdown_reader import BreakdownReader
 from modules.pavf_reader import read_pavf_records
 from modules.email_evidence_reader import read_email_evidence
 from modules.reconciliation_matcher import ReconciliationMatcher
-from modules.reconciliation_report import create_reconciliation_report
-
 
 APP_DIR = Path(__file__).resolve().parent
 DATA_DIR = APP_DIR / "data"
@@ -35,34 +33,27 @@ def save_upload(uploaded_file, destination: Path) -> Path:
 def save_uploads(uploaded_files, destination: Path) -> list[Path]:
     paths = []
     destination.mkdir(parents=True, exist_ok=True)
+
     for uploaded in uploaded_files or []:
-        paths.append(save_upload(uploaded, destination / uploaded.name))
+        paths.append(
+            save_upload(
+                uploaded,
+                destination / uploaded.name
+            )
+        )
+
     return paths
 
 
-def build_breakdown_records(path: Path):
-    """Convert BreakdownReader dictionaries to project BreakdownRecord objects."""
-    from modules.models import BreakdownRecord
-
-    records = []
-    for row in BreakdownReader(path).read():
-        allowed = BreakdownRecord.__dataclass_fields__.keys()
-        values = {key: value for key, value in row.items() if key in allowed}
-        records.append(BreakdownRecord(**values))
-    return records
-
-
 st.title("pyPAVF")
-st.caption("PAVF reimbursement reconciliation")
+
+st.caption(
+    "Build an approval ledger from PAVFs and approval emails"
+)
 
 with st.sidebar:
-    st.header("Reconciliation Inputs")
 
-    breakdown_upload = st.file_uploader(
-        "Reimbursement Breakdown",
-        type=["xlsx", "xlsm"],
-        accept_multiple_files=False,
-    )
+    st.header("Approval Ledger Inputs")
 
     pavf_uploads = st.file_uploader(
         "PAVF Files",
@@ -71,33 +62,39 @@ with st.sidebar:
     )
 
     email_uploads = st.file_uploader(
-        "Email Evidence",
+        "Approval Emails",
         type=["eml", "txt"],
         accept_multiple_files=True,
     )
 
     run_button = st.button(
-        "Run Reconciliation",
+        "Build Approval Ledger",
         type="primary",
-        use_container_width=True,
+        width="stretch",
     )
 
-col1, col2, col3 = st.columns(3)
-col1.metric("Breakdown", "Ready" if breakdown_upload else "Not loaded")
-col2.metric("PAVFs", len(pavf_uploads or []))
-col3.metric("Emails", len(email_uploads or []))
+col1, col2 = st.columns(2)
+
+col1.metric(
+    "PAVFs",
+    len(pavf_uploads or [])
+)
+
+col2.metric(
+    "Emails",
+    len(email_uploads or [])
+)
 
 st.divider()
 
-if not run_button:
+if (
+    not run_button
+    and "ledger_df" not in st.session_state
+):
     st.info(
-        "Load a reimbursement breakdown, the applicable PAVF files, and "
-        "email evidence. Then select **Run Reconciliation**."
+        "Load PAVF files and approval emails, then select "
+        "**Build Approval Ledger**."
     )
-    st.stop()
-
-if breakdown_upload is None:
-    st.error("Please load a reimbursement breakdown workbook.")
     st.stop()
 
 if not pavf_uploads:
@@ -106,106 +103,212 @@ if not pavf_uploads:
 
 if not email_uploads:
     st.warning(
-        "No email evidence was loaded. The reconciliation can still run, "
-        "but approvals will not be available."
+        "No email evidence was loaded. The approval ledger "
+        "can still be built, but approvals will not be available."
     )
 
 try:
-    with st.status("Running PAVF reconciliation...", expanded=True) as status:
-        with tempfile.TemporaryDirectory(prefix="pypavf_") as temp_name:
-            work_dir = Path(temp_name)
-            breakdown_dir = work_dir / "breakdown"
-            pavf_dir = work_dir / "pavf"
-            email_dir = work_dir / "emails"
 
-            st.write("Reading reimbursement breakdown...")
-            breakdown_path = save_upload(
-                breakdown_upload,
-                breakdown_dir / breakdown_upload.name,
-            )
-            breakdown_records = build_breakdown_records(breakdown_path)
+    if run_button:
 
-            st.write("Reading PAVF files...")
-            save_uploads(pavf_uploads, pavf_dir)
-            pavf_records = read_pavf_records(pavf_dir)
+        with st.status(
+            "Building approval ledger...",
+            expanded=True,
+        ) as status:
 
-            st.write("Reading email evidence...")
-            save_uploads(email_uploads, email_dir)
-            email_evidence = (
-                read_email_evidence(email_dir)
-                if email_uploads
-                else []
-            )
+            with tempfile.TemporaryDirectory(
+                prefix="pypavf_"
+            ) as temp_name:
 
-            st.write("Matching records...")
-            results = ReconciliationMatcher().reconcile(
-                breakdown_records=breakdown_records,
-                pavf_records=pavf_records,
-                email_evidence=email_evidence,
-            )
+                work_dir = Path(temp_name)
 
-            st.write("Building Excel report...")
-            report_path = OUTPUT_DIR / "PAVF_Reconciliation_Report.xlsx"
-            create_reconciliation_report(results, report_path)
+                pavf_dir = work_dir / "pavf"
+                email_dir = work_dir / "emails"
 
-            status.update(
-                label="Reconciliation complete",
-                state="complete",
-                expanded=False,
-            )
+                st.write("Reading PAVF files...")
 
-    counts = {}
-    for result in results:
-        status_value = getattr(result.status, "value", str(result.status))
-        counts[status_value] = counts.get(status_value, 0) + 1
+                save_uploads(
+                    pavf_uploads,
+                    pavf_dir,
+                )
 
-    st.subheader("Results")
-    summary_cols = st.columns(4)
-    summary_cols[0].metric("Records", len(results))
-    summary_cols[1].metric("Approved", counts.get("APPROVED", 0))
-    summary_cols[2].metric("PAVF Not Found", counts.get("PAVF_NOT_FOUND", 0))
-    summary_cols[3].metric(
-        "Needs Review",
-        sum(
-            count
-            for name, count in counts.items()
-            if name not in {"APPROVED", "PAVF_NOT_FOUND"}
-        ),
+                pavf_records = read_pavf_records(
+                    pavf_dir
+                )
+
+                st.write("Reading email evidence...")
+
+                save_uploads(
+                    email_uploads,
+                    email_dir,
+                )
+
+                email_evidence = (
+                    read_email_evidence(email_dir)
+                    if email_uploads
+                    else []
+                )
+
+                st.write(
+                    "Matching PAVFs to approval emails..."
+                )
+
+                matcher = ReconciliationMatcher()
+
+                results = []
+
+                for pavf in pavf_records:
+
+                    approval = matcher._find_thread_approval(
+                        breakdown=pavf,
+                        pavf=pavf,
+                        evidence_list=email_evidence,
+                    )
+
+                    results.append(
+                        {
+                            "Date": pavf.problem_date,
+                            "Part Number": pavf.part_number,
+                            "Cardboard Boxes": pavf.box_qty,
+                            "PO Number": pavf.po_number,
+                            "Approval": getattr(
+                                approval.approval_status,
+                                "value",
+                                "NOT_FOUND",
+                            ),
+                            "Approval Date": approval.approval_date,
+                            "Approval Email": approval.evidence_file,
+                        }
+                    )
+
+                ledger_df = pd.DataFrame(results)
+
+                if not ledger_df.empty:
+
+                    ledger_df = ledger_df.sort_values(
+                        by=["Date", "Part Number"]
+                    )
+
+                st.session_state["ledger_df"] = ledger_df
+
+                status.update(
+                    label="Approval ledger complete",
+                    state="complete",
+                    expanded=False,
+                )
+
+    ledger_df = st.session_state.get(
+        "ledger_df",
+        pd.DataFrame()
     )
 
-    table_rows = []
-    for result in results:
-        breakdown = result.breakdown
-        pavf = result.pavf
-        approval = result.approval
-        table_rows.append({
-            "Date": getattr(breakdown, "date", None),
-            "Part Number": getattr(breakdown, "part_number", ""),
-            "Breakdown Boxes": getattr(breakdown, "box_qty", None),
-            "PAVF Boxes": getattr(pavf, "box_qty", None) if pavf else None,
-            "Approval": (
-                getattr(getattr(approval, "approval_status", None), "value", "")
-                if approval else ""
-            ),
-            "Status": getattr(result.status, "value", str(result.status)),
-            "Notes": "; ".join(getattr(result, "notes", []) or []),
-        })
+    if ledger_df.empty:
+        st.stop()
+
+    approved_count = (
+        ledger_df["Approval"]
+        .eq("APPROVED")
+        .sum()
+    )
+
+    missing_count = (
+        len(ledger_df)
+        - approved_count
+    )
+
+    st.subheader("Approval Ledger")
+
+    summary_cols = st.columns(3)
+
+    summary_cols[0].metric(
+        "PAVFs",
+        len(ledger_df)
+    )
+
+    summary_cols[1].metric(
+        "Approved",
+        approved_count
+    )
+
+    summary_cols[2].metric(
+        "Missing Approval",
+        missing_count
+    )
 
     st.dataframe(
-        table_rows,
-        use_container_width=True,
+        ledger_df,
+        width="stretch",
         hide_index=True,
     )
 
-    report_bytes = report_path.read_bytes()
+    #
+    # Build filename
+    #
+    min_date = pd.to_datetime(
+        ledger_df["Date"].min()
+    )
+
+    max_date = pd.to_datetime(
+        ledger_df["Date"].max()
+    )
+
+    if min_date.date() == max_date.date():
+
+        file_name = (
+            f"Approval_Ledger_"
+            f"{min_date:%Y_%m_%d}.xlsx"
+        )
+
+    else:
+
+        file_name = (
+            f"Approval_Ledger_"
+            f"{min_date:%Y_%m_%d}"
+            f"_to_"
+            f"{max_date:%Y_%m_%d}.xlsx"
+        )
+
+    #
+    # Create Excel in memory
+    #
+    export_df = ledger_df.copy()
+
+    if "Approval Date" in export_df.columns:
+
+        export_df["Approval Date"] = (
+            pd.to_datetime(
+                export_df["Approval Date"],
+                errors="coerce",
+                utc=True,
+            )
+            .dt.tz_localize(None)
+        )
+
+    buffer = BytesIO()
+
+    export_df.to_excel(
+        buffer,
+        index=False,
+        engine="openpyxl",
+    )
+
+    buffer.seek(0)
+
     st.download_button(
-        "Download Reconciliation Report",
-        data=report_bytes,
-        file_name=report_path.name,
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "Download Approval Ledger",
+        data=buffer.getvalue(),
+        file_name=file_name,
+        mime=(
+            "application/vnd.openxmlformats-"
+            "officedocument.spreadsheetml.sheet"
+        ),
         type="primary",
     )
 
 except Exception as exc:
-    st.error("The reconciliation could not be completed.")
+
+    st.error(
+        "The approval ledger could not be created."
+    )
+
     st.exception(exc)

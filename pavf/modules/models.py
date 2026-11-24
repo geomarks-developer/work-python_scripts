@@ -7,6 +7,25 @@ from enum import Enum
 from pathlib import Path
 
 
+@dataclass
+class ApprovalLedgerRecord:
+    shipment_date: date | None
+    part_number: str
+
+    box_qty: int | float | None
+    po_number: str | None
+
+    approval_status: str
+
+    approval_date: datetime | None
+
+    pavf_file: str
+
+    approval_email: str | None
+
+    approval_phrase: str | None
+
+
 class ApprovalStatus(str, Enum):
     APPROVED = "APPROVED"
     NOT_FOUND = "NOT_FOUND"
